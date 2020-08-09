@@ -1,15 +1,12 @@
 package com.article.service;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.article.entity.Article;
-import com.article.exception.ArticleException;
-import com.article.repository.ArticleRepository;
+import com.article.entity.*;
+import com.article.exception.*;
+import com.article.repository.*;
+import java.time.*;
+import java.util.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
 @Service
 public class ArticleService {
@@ -17,9 +14,12 @@ public class ArticleService {
 	@Autowired
 	private ArticleRepository articleRepository;
 	
-	
-	public Article createArticle(Article article) {
+	public com.article.entity.Article createArticle( Article article) {
 		Article updateArticle = new Article();
+
+		//set article uuid
+		String uniqueID = UUID.randomUUID().toString();
+		updateArticle.setArticle_id(uniqueID);
 
 		//set basic article details
 		String lowercaseSlug = article.getTitle().replace(" ", "-").toLowerCase();
@@ -28,10 +28,6 @@ public class ArticleService {
 		updateArticle.setDescription(article.getDescription());
 		updateArticle.setBody(article.getBody());
 
-		//set article uuid
-		String uniqueID = UUID.randomUUID().toString();
-		updateArticle.setArticle_id(uniqueID);
-
 		//set article timestamp
 		ZonedDateTime zdtObj = ZonedDateTime.now();
 		updateArticle.setCreatedAt(zdtObj);
@@ -39,38 +35,31 @@ public class ArticleService {
 		
 		return articleRepository.save(updateArticle);
 	}
-	
-	public List<Article> findAllArticle(){
-		return articleRepository.findAll();
-	}
 
-	public Article getById(String article_id) throws ArticleException {
-		Article article = articleRepository.getById(article_id);
+	public Article getById(String slug_id) throws ArticleException {
+		Article article = articleRepository.getById(slug_id);
 		try {
 			if(article == null) {
-				throw new ArticleException("No article found with id " + article_id);
+				throw new ArticleException("No article found with id " + slug_id);
 			}
-
 		}catch (Exception exception) {
-			throw new ArticleException("No article found with id " + article_id);
+			throw new ArticleException("No article found with id " + slug_id);
 		}
 		return article;
 	}
-
 	
-	public Article updateArticle(String title, String article_id) {
-		Article currentArticle = articleRepository.getById(article_id);
+	public Article updateArticle(String title, String slug_id) {
+		Article currentArticle = articleRepository.getById(slug_id);
 		currentArticle.setTitle(title);
 		return articleRepository.save(currentArticle);
 	}
 
-	public String deleteArticle(String article_id) {
-		if(article_id.equals(articleRepository.isIdExist(article_id))) {
-			articleRepository.deleteByArticalId(article_id);
+	public String deleteArticle(String slug_id) {
+		if(slug_id.equals(articleRepository.isIdExist(slug_id))) {
+			articleRepository.deleteByArticalId(slug_id);
 		}else {
-			article_id = "ID DOES NOT EXISTS!";
+			slug_id = "ID DOES NOT EXISTS!";
 		}
-		return article_id;
+		return slug_id;
 	}
-
 }
