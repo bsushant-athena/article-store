@@ -33,7 +33,6 @@ public class ArticleController {
 	 	return new ResponseEntity <Article> (newArticle, HttpStatus.OK);
 	}
 
-
 //	@GetMapping
 //	@ApiResponses(value = {
 //	        @ApiResponse(code = 200, message = "Successfully retrieved list"),

@@ -13,7 +13,9 @@ import javax.persistence.*;
     "description",
     "body",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+	"wordcount",
+	"humantimetoread"
 })
 
 @Data
@@ -44,6 +46,18 @@ public class Article {
     @ApiModelProperty(value = "Date of updation of resources")
     private ZonedDateTime updatedAt;
 
+	private Long wordcount;
+
+	private Long humantimetoread;
+
+
+	public Long getHumantimetoread ( ) {
+		return humantimetoread;
+	}
+
+	public void setHumantimetoread ( Long humantimetoread ) {
+		this.humantimetoread = humantimetoread;
+	}
 
 	public Long getId ( ) {
 		return id;
@@ -107,6 +121,14 @@ public class Article {
 
 	public void setUpdatedAt ( java.time.ZonedDateTime updatedAt ) {
 		this.updatedAt = updatedAt;
+	}
+
+	public Long getWordcount ( ) {
+		return wordcount;
+	}
+
+	public void setWordcount ( Long wordcount ) {
+		this.wordcount = wordcount;
 	}
 
 }

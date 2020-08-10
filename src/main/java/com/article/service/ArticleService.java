@@ -13,7 +13,10 @@ public class ArticleService {
 	
 	@Autowired
 	private ArticleRepository articleRepository;
-	
+
+	@Value("${reading.speed.of.avg.human}")
+	private int avgHumanReadingSpeed;
+
 	public com.article.entity.Article createArticle( Article article) {
 		Article updateArticle = new Article();
 
@@ -27,6 +30,11 @@ public class ArticleService {
 		updateArticle.setTitle(article.getTitle());
 		updateArticle.setDescription(article.getDescription());
 		updateArticle.setBody(article.getBody());
+
+		//business logic
+		//get total word count
+
+		updateArticle.setWordcount (4000L);
 
 		//set article timestamp
 		ZonedDateTime zdtObj = ZonedDateTime.now();
@@ -50,7 +58,11 @@ public class ArticleService {
 	
 	public Article updateArticle(String title, String slug_id) {
 		Article currentArticle = articleRepository.getById(slug_id);
-		currentArticle.setTitle(title);
+		currentArticle.setSlug(title);
+
+		//business logic
+		currentArticle.setWordcount(102L);
+
 		return articleRepository.save(currentArticle);
 	}
 
@@ -64,6 +76,36 @@ public class ArticleService {
 	}
 
 	public ArticleReadTime getTimetoRead(String slug_id){
-		return null;
+
+		Article currentArticle = articleRepository.getById(slug_id);
+
+		//business logic
+		long wordcount = currentArticle.getWordcount();
+
+		int totalHumanMinutes = (int)wordcount/avgHumanReadingSpeed;
+		int days = totalHumanMinutes / (24 * 60);
+
+		totalHumanMinutes = totalHumanMinutes % (24 * 60);
+		int hours = totalHumanMinutes / 60;
+
+		totalHumanMinutes %= 60;
+		int minutes = totalHumanMinutes / 60 ;
+
+		totalHumanMinutes %= 60;
+		int seconds = totalHumanMinutes;
+
+
+		ArticleReadTime articleReadTime = new ArticleReadTime();
+		articleReadTime.setArticleId ( slug_id );
+
+		TimetoRead timetoRead = new TimetoRead();
+		timetoRead.setDays ( days );
+		timetoRead.setHours ( hours );
+		timetoRead.setMins( minutes );
+		timetoRead.setSeconds ( seconds );
+
+		articleReadTime.setTimetoRead ( timetoRead );
+
+		return articleReadTime;
 	}
 }
