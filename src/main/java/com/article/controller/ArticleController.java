@@ -12,19 +12,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/articles")
 public class ArticleController {
 
-	Logger logger = LoggerFactory.getLogger(ArticleController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
 
 	@Autowired
 	private ArticleService articleService;
 
+	@Autowired
+	private ArticleReadTimeService articleReadTimeService;
+
 	@PostMapping
-	public ResponseEntity<Article>  createArticle(@RequestBody Article article) {
+	public ResponseEntity<Article>  createArticle(@RequestBody Article article) throws ArticleException {
 		return new ResponseEntity<Article>(articleService.createArticle(article), HttpStatus.CREATED);
 	}
 	
 	@PatchMapping("/{slug_id}")
-	public ResponseEntity <Article> updateArticle(@RequestParam(value ="title" , required = true) String title, @PathVariable("slug_id") String slug_id) {
-	 	Article newArticle = articleService.updateArticle(title, slug_id);
+	public ResponseEntity <Article> updateArticle(@RequestParam(value ="title" , required = true) String title, @PathVariable("slug_id") String slug_id) throws ArticleException {
+	 	Article newArticle = articleService.updateArticleTitle(title, slug_id);
 	 	return new ResponseEntity <Article> (newArticle, HttpStatus.OK);
 	}
 	
@@ -36,14 +39,12 @@ public class ArticleController {
 
 	@DeleteMapping(value="/{slug_id}")
 	public String deleteBySlugId(@PathVariable String slug_id) {
-		
 		articleService.deleteArticle(slug_id);
 		return "Deleted article with id "+slug_id;
-		
 	}
 
 	@GetMapping(value = "/readtime/{slug_id}")
-	public ArticleReadTime getTimetoRead(@PathVariable("slug_id") String slug_id) throws ArticleException {
-		return articleService.getTimetoRead(slug_id);
+	public ArticleReadTime getTimetoRead(@PathVariable("slug_id") String slug_id) {
+		return articleReadTimeService.getTimetoRead(slug_id);
 	}
 }

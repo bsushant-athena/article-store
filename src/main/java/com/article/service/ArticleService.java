@@ -5,36 +5,43 @@ import com.article.exception.*;
 import com.article.repository.*;
 import java.time.*;
 import java.util.*;
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
-
 @Service
 public class ArticleService {
 	
 	@Autowired
 	private ArticleRepository articleRepository;
 
-	@Value("${reading.speed.of.avg.human}")
-	private int avgHumanReadingSpeed;
+	private static final Logger logger = LoggerFactory.getLogger( com.article.controller.ArticleController.class);
 
-	public com.article.entity.Article createArticle( Article article) {
+	public com.article.entity.Article createArticle( Article article) throws ArticleException {
+
+		//condition mandatory article details
+		Optional<String> articleTitle = Optional.ofNullable(article.getTitle()).filter(s -> !s.isEmpty());
+		Optional<String> articleDesc = Optional.ofNullable(article.getDescription()).filter(s -> !s.isEmpty());
+		Optional<String> articleBody = Optional.ofNullable(article.getBody()).filter(s -> !s.isEmpty());
+
+		if(!articleTitle.isPresent () || !articleDesc.isPresent () || !articleBody.isPresent ()){
+			throw new com.article.exception.ArticleException ( "Please provide all mandatory fields for creating an article!" );
+		}
+
 		Article updateArticle = new Article();
+		updateArticle.setTitle(articleTitle.get ());
+		updateArticle.setDescription(articleDesc.get ());
+		updateArticle.setBody(articleBody.get ());
+
+		String lowercaseSlug = article.getTitle().replace(" ", "-").toLowerCase();
+		updateArticle.setSlug(lowercaseSlug);
 
 		//set article uuid
 		String uniqueID = UUID.randomUUID().toString();
 		updateArticle.setSlug_id(uniqueID);
 
-		//set basic article details
-		String lowercaseSlug = article.getTitle().replace(" ", "-").toLowerCase();
-		updateArticle.setSlug(lowercaseSlug);
-		updateArticle.setTitle(article.getTitle());
-		updateArticle.setDescription(article.getDescription());
-		updateArticle.setBody(article.getBody());
-
 		//business logic
-		//get total word count
-
-		updateArticle.setWordcount (4000L);
+		long wordcount = calculateTotalWordCount(article.getTitle(),article.getDescription(),article.getBody());
+		updateArticle.setWordcount (wordcount);
 
 		//set article timestamp
 		ZonedDateTime zdtObj = ZonedDateTime.now();
@@ -45,67 +52,45 @@ public class ArticleService {
 	}
 
 	public Article getById(String slug_id) throws ArticleException {
-		Article article = articleRepository.getById(slug_id);
+		Optional<Article> article = articleRepository.findById(slug_id);
 		try {
-			if(article == null) {
+			if(!article.isPresent ()) {
 				throw new ArticleException("No article found with id " + slug_id);
 			}
 		}catch (Exception exception) {
 			throw new ArticleException("No article found with id " + slug_id);
 		}
-		return article;
+		return article.get();
 	}
 	
-	public Article updateArticle(String title, String slug_id) {
-		Article currentArticle = articleRepository.getById(slug_id);
-		currentArticle.setSlug(title);
-
-		//business logic
-		currentArticle.setWordcount(102L);
-
-		return articleRepository.save(currentArticle);
+	public Article updateArticleTitle(String title, String slug_id)throws ArticleException {
+		Optional<Article> currentArticle = articleRepository.findById(slug_id); //spring JPA CrudRepository inbuilt method
+		try {
+			if(!currentArticle.isPresent ()) {
+				throw new ArticleException("No article found with id " + slug_id);
+			}
+		}catch (Exception exception) {
+			throw new ArticleException("No article found with id " + slug_id);
+		}
+		currentArticle.get().setSlug(title);
+		//here not updating word count assuming title update will not cause huge diff in human reading time
+		return articleRepository.save(currentArticle.get ()); //spring JPA CrudRepository inbuilt method
 	}
 
 	public String deleteArticle(String slug_id) {
-		if(slug_id.equals(articleRepository.isIdExist(slug_id))) {
-			articleRepository.deleteByArticalId(slug_id);
+		if(slug_id.equals(articleRepository.existsById(slug_id))) {
+			articleRepository.deleteByArticalById(slug_id);
 		}else {
-			slug_id = "ID DOES NOT EXISTS!";
+			slug_id = "Slug ID DOES NOT EXISTS!";
 		}
 		return slug_id;
 	}
 
-	public ArticleReadTime getTimetoRead(String slug_id){
+	private long calculateTotalWordCount(String title, String description, String body){
 
-		Article currentArticle = articleRepository.getById(slug_id);
-
-		//business logic
-		long wordcount = currentArticle.getWordcount();
-
-		int totalHumanMinutes = (int)wordcount/avgHumanReadingSpeed;
-		int days = totalHumanMinutes / (24 * 60);
-
-		totalHumanMinutes = totalHumanMinutes % (24 * 60);
-		int hours = totalHumanMinutes / 60;
-
-		totalHumanMinutes %= 60;
-		int minutes = totalHumanMinutes / 60 ;
-
-		totalHumanMinutes %= 60;
-		int seconds = totalHumanMinutes;
-
-
-		ArticleReadTime articleReadTime = new ArticleReadTime();
-		articleReadTime.setArticleId ( slug_id );
-
-		TimetoRead timetoRead = new TimetoRead();
-		timetoRead.setDays ( days );
-		timetoRead.setHours ( hours );
-		timetoRead.setMins( minutes );
-		timetoRead.setSeconds ( seconds );
-
-		articleReadTime.setTimetoRead ( timetoRead );
-
-		return articleReadTime;
+		long totalWordsCount = Arrays.stream(title.split( " " )).count ();
+		totalWordsCount  += Arrays.stream(description.split( " " )).count ();
+		totalWordsCount += Arrays.stream(body.split( " " )).count ();
+		return totalWordsCount;
 	}
 }
