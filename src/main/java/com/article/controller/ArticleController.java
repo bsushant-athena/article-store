@@ -33,11 +33,12 @@ public class ArticleController {
 	 	return new ResponseEntity <Article> (newArticle, HttpStatus.OK);
 	}
 
-	@GetMapping
-	@ApiResponses(value = {
-	        @ApiResponse(code = 200, message = "Successfully retrieved list"),
-	        @ApiResponse(code = 404, message = "Resource not found")
-	})
+//
+//	@GetMapping
+//	@ApiResponses(value = {
+//	        @ApiResponse(code = 200, message = "Successfully retrieved list"),
+//	        @ApiResponse(code = 404, message = "Resource not found")
+//	})
 	
 	@GetMapping("/{slug_id}")
 	@ResponseBody
