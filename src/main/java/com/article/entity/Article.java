@@ -14,8 +14,7 @@ import javax.persistence.*;
     "body",
     "createdAt",
     "updatedAt",
-	"wordcount",
-	"humantimetoread"
+	"wordcount"
 })
 
 @Data
@@ -48,16 +47,7 @@ public class Article {
 
 	private Long wordcount;
 
-	private Long humantimetoread;
 
-
-	public Long getHumantimetoread ( ) {
-		return humantimetoread;
-	}
-
-	public void setHumantimetoread ( Long humantimetoread ) {
-		this.humantimetoread = humantimetoread;
-	}
 
 	public Long getId ( ) {
 		return id;
