@@ -19,7 +19,7 @@ public class ArticleService {
 
 		//set article uuid
 		String uniqueID = UUID.randomUUID().toString();
-		updateArticle.setArticle_id(uniqueID);
+		updateArticle.setSlug_id(uniqueID);
 
 		//set basic article details
 		String lowercaseSlug = article.getTitle().replace(" ", "-").toLowerCase();
@@ -61,5 +61,9 @@ public class ArticleService {
 			slug_id = "ID DOES NOT EXISTS!";
 		}
 		return slug_id;
+	}
+
+	public ArticleReadTime getTimetoRead(String slug_id){
+		return null;
 	}
 }

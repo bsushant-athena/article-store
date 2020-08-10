@@ -16,7 +16,7 @@ import static springfox.documentation.builders.PathSelectors.regex;
 public class ArticleSwaggerConfig {
 	@Bean
 	public Docket postsApi() {
-		return new Docket(DocumentationType.SWAGGER_2).host("localhost:8080/api/article").groupName("Article Store").apiInfo(apiInfo()).select()
+		return new Docket(DocumentationType.SWAGGER_2).host("localhost:8080/api/articles").groupName("Article Store").apiInfo(apiInfo()).select()
 				.paths(regex("/api/articles.*")).build();
 	}
 

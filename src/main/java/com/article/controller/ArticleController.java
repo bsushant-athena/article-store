@@ -33,7 +33,7 @@ public class ArticleController {
 	 	return new ResponseEntity <Article> (newArticle, HttpStatus.OK);
 	}
 
-//
+
 //	@GetMapping
 //	@ApiResponses(value = {
 //	        @ApiResponse(code = 200, message = "Successfully retrieved list"),
@@ -43,7 +43,7 @@ public class ArticleController {
 	@GetMapping("/{slug_id}")
 	@ResponseBody
 	@ApiOperation(value = "Get article by Slug Id ")
-	public Article getBySlugId(@PathVariable String slug_id) throws ArticleException {
+	public Article getBySlugId( @PathVariable String slug_id) throws ArticleException {
 		return articleService.getById(slug_id);
 	}
 
@@ -54,5 +54,11 @@ public class ArticleController {
 		articleService.deleteArticle(slug_id);
 		return "Deleted article with id "+slug_id;
 		
+	}
+
+	@GetMapping(value = "/readtime/{slug_id}")
+	@ApiOperation(value = "Get time to read an article by Slug Id")
+	public ArticleReadTime getTimetoRead(@PathVariable("slug_id") String slug_id) throws ArticleException {
+		return articleService.getTimetoRead(slug_id);
 	}
 }
