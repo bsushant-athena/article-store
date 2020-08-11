@@ -8,6 +8,7 @@ import java.util.*;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
+
 @Service
 public class ArticleService {
 	
@@ -45,41 +46,32 @@ public class ArticleService {
 
 		//set article timestamp
 		ZonedDateTime zdtObj = ZonedDateTime.now();
+		zdtObj.format( java.time.format.DateTimeFormatter.ISO_INSTANT.withZone(ZoneId.systemDefault()) );
 		updateArticle.setCreatedAt(zdtObj);
 		updateArticle.setUpdatedAt(zdtObj);
 		
 		return articleRepository.save(updateArticle);
 	}
 
-	public Article getById(String slug_id) throws ArticleException {
-		Optional<Article> article = articleRepository.findById(slug_id);
-		try {
-			if(!article.isPresent ()) {
-				throw new ArticleException("No article found with id " + slug_id);
-			}
-		}catch (Exception exception) {
-			throw new ArticleException("No article found with id " + slug_id);
-		}
-		return article.get();
+	public Article getBySlug_Id(String slug_id) {
+		Optional<Article> article = articleRepository.getBySlug_Id(slug_id);
+		return article.isPresent() ? article.get() : null;
 	}
 	
-	public Article updateArticleTitle(String title, String slug_id)throws ArticleException {
-		Optional<Article> currentArticle = articleRepository.findById(slug_id); //spring JPA CrudRepository inbuilt method
-		try {
-			if(!currentArticle.isPresent ()) {
-				throw new ArticleException("No article found with id " + slug_id);
-			}
-		}catch (Exception exception) {
+	public Article updateArticleTitle(String title, String slug_id) throws ArticleException {
+		Optional<Article> currentArticle = articleRepository.getBySlug_Id(slug_id);
+		if(!currentArticle.isPresent ()) {
 			throw new ArticleException("No article found with id " + slug_id);
 		}
-		currentArticle.get().setSlug(title);
+		String lowercaseSlug = title.replace(" ", "-").toLowerCase();
+		currentArticle.get().setSlug(lowercaseSlug);
 		//here not updating word count assuming title update will not cause huge diff in human reading time
 		return articleRepository.save(currentArticle.get ()); //spring JPA CrudRepository inbuilt method
 	}
 
 	public String deleteArticle(String slug_id) {
-		if(slug_id.equals(articleRepository.existsById(slug_id))) {
-			articleRepository.deleteByArticalById(slug_id);
+		if(slug_id.equals(articleRepository.isIdExist(slug_id))) {
+			articleRepository.deleteBySlug_Id(slug_id);
 		}else {
 			slug_id = "Slug ID DOES NOT EXISTS!";
 		}

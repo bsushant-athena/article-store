@@ -1,42 +1,51 @@
 package com.article.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
+import com.article.entity.*;
+import java.util.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
+import com.article.repository.ArticleRepository;
+import com.article.entity.ArticleReadTime;
+@Service
 public class ArticleReadTimeService {
 
     @Autowired
-    private com.article.repository.ArticleRepository articleRepository;
+    private ArticleRepository articleRepository;
 
     @Value ("${reading.speed.of.avg.human}")
     private int avgHumanReadingSpeedPerMinute;
 
-    public com.article.entity.ArticleReadTime getTimetoRead( String slug_id){
+    public ArticleReadTime getTimetoRead( String slug_id) {
 
-        com.article.entity.Article currentArticle = articleRepository.getById(slug_id);
+        Optional<Article> currentArticle = articleRepository.getBySlug_Id(slug_id);
 
-        //business logic to calculate days,hours,minutes and seconds to read an article
-        long wordcount = currentArticle.getWordcount();
+        if(!currentArticle.isPresent ()) {
+            return null;
+        }
 
-        int totalHumanMinutes = (int)wordcount/avgHumanReadingSpeedPerMinute;
-        int days = totalHumanMinutes / (24 * 60);
+        //business logic to calculate minutes and seconds to read an article
+        int minutes=0,seconds=0;
+        long wordcount = currentArticle.get().getWordcount();
 
-        totalHumanMinutes = totalHumanMinutes % (24 * 60);
-        int hours = totalHumanMinutes / 60;
+        if(wordcount == avgHumanReadingSpeedPerMinute){
 
-        totalHumanMinutes %= 60;
-        int minutes = totalHumanMinutes / 60 ;
+            minutes = 1;
+            seconds = 0;
+        }else if(wordcount < avgHumanReadingSpeedPerMinute){
 
-        totalHumanMinutes %= 60;
-        int seconds = totalHumanMinutes;
+            seconds = (int) ((wordcount * 60) / avgHumanReadingSpeedPerMinute);
+            minutes = 0;
+        }
+        else{
+            minutes = (int)wordcount/avgHumanReadingSpeedPerMinute;
+            seconds = (int)wordcount % avgHumanReadingSpeedPerMinute;
+        }
 
 
         com.article.entity.ArticleReadTime articleReadTime = new com.article.entity.ArticleReadTime ();
         articleReadTime.setArticleId ( slug_id );
 
         com.article.entity.TimetoRead timetoRead = new com.article.entity.TimetoRead ();
-        timetoRead.setDays ( days );
-        timetoRead.setHours ( hours );
         timetoRead.setMins( minutes );
         timetoRead.setSeconds ( seconds );
 

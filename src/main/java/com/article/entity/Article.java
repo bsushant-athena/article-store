@@ -19,15 +19,17 @@ import javax.persistence.*;
 
 @Data
 @Entity
-public class Article {
+public class Article implements java.io.Serializable {
+
+	public static final long serialVersionUID = 2L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@JsonIgnore
 	private Long id;
 
-    @JsonProperty(value="id")
-    private String slug_id;
+	@JsonProperty(value="id")
+	private String slug_id;
 
     private String slug;
 
@@ -44,14 +46,6 @@ public class Article {
 	private Long wordcount;
 
 
-
-	public Long getId ( ) {
-		return id;
-	}
-
-	public void setId ( Long id ) {
-		this.id = id;
-	}
 
 	public String getSlug_id ( ) {
 		return slug_id;
@@ -93,19 +87,19 @@ public class Article {
 		this.body = body;
 	}
 
-	public java.time.ZonedDateTime getCreatedAt ( ) {
+	public ZonedDateTime getCreatedAt ( ) {
 		return createdAt;
 	}
 
-	public void setCreatedAt ( java.time.ZonedDateTime createdAt ) {
+	public void setCreatedAt ( ZonedDateTime createdAt ) {
 		this.createdAt = createdAt;
 	}
 
-	public java.time.ZonedDateTime getUpdatedAt ( ) {
+	public ZonedDateTime getUpdatedAt ( ) {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt ( java.time.ZonedDateTime updatedAt ) {
+	public void setUpdatedAt ( ZonedDateTime updatedAt ) {
 		this.updatedAt = updatedAt;
 	}
 
@@ -116,5 +110,4 @@ public class Article {
 	public void setWordcount ( Long wordcount ) {
 		this.wordcount = wordcount;
 	}
-
 }

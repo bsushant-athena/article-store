@@ -26,15 +26,19 @@ public class ArticleController {
 	}
 	
 	@PatchMapping("/{slug_id}")
-	public ResponseEntity <Article> updateArticle(@RequestParam(value ="title" , required = true) String title, @PathVariable("slug_id") String slug_id) throws ArticleException {
+	public ResponseEntity <Article> updateArticle(@RequestParam(value ="title" , required = true) String title,
+												  @PathVariable("slug_id") String slug_id) throws ArticleException {
 	 	Article newArticle = articleService.updateArticleTitle(title, slug_id);
 	 	return new ResponseEntity <Article> (newArticle, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{slug_id}")
 	@ResponseBody
-	public Article getBySlugId( @PathVariable String slug_id) throws ArticleException {
-		return articleService.getById(slug_id);
+	public ResponseEntity <Article> getBySlugId( @PathVariable String slug_id){
+		Article article = articleService.getBySlug_Id(slug_id);
+		return article != null ?
+				new ResponseEntity <Article> (article, HttpStatus.OK) :
+				new ResponseEntity <> ( HttpStatus.NOT_FOUND);
 	}
 
 	@DeleteMapping(value="/{slug_id}")
@@ -44,7 +48,10 @@ public class ArticleController {
 	}
 
 	@GetMapping(value = "/readtime/{slug_id}")
-	public ArticleReadTime getTimetoRead(@PathVariable("slug_id") String slug_id) {
-		return articleReadTimeService.getTimetoRead(slug_id);
+	public ResponseEntity <ArticleReadTime> getTimetoRead( @PathVariable("slug_id") String slug_id) {
+		ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead(slug_id);
+		return articleReadTime != null ?
+				new ResponseEntity <ArticleReadTime> (articleReadTime, HttpStatus.OK) :
+				new ResponseEntity <> ( HttpStatus.NOT_FOUND);
 	}
 }
