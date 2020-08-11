@@ -36,10 +36,6 @@ public class ArticleService {
 		String lowercaseSlug = article.getTitle().replace(" ", "-").toLowerCase();
 		updateArticle.setSlug(lowercaseSlug);
 
-		//set article uuid
-		String uniqueID = UUID.randomUUID().toString();
-		updateArticle.setSlug_id(uniqueID);
-
 		//business logic
 		long wordcount = calculateTotalWordCount(article.getTitle(),article.getDescription(),article.getBody());
 		updateArticle.setWordcount (wordcount);
@@ -53,27 +49,27 @@ public class ArticleService {
 		return articleRepository.save(updateArticle);
 	}
 
-	public Article getBySlug_Id(String slug_id) {
-		Optional<Article> article = articleRepository.getBySlug_Id(slug_id);
+	public Article getBySlug_Id(long slug_id) {
+		Optional<Article> article = articleRepository.findById(slug_id);
 		return article.isPresent() ? article.get() : null;
 	}
 	
-	public Article updateArticleTitle(String title, String slug_id) throws ArticleException {
-		Optional<Article> currentArticle = articleRepository.getBySlug_Id(slug_id);
+	public Article updateArticleTitle(String title, long slug_id) throws ArticleException {
+		Optional<Article> currentArticle = articleRepository.findById(slug_id);
 		if(!currentArticle.isPresent ()) {
 			throw new ArticleException("No article found with id " + slug_id);
 		}
 		String lowercaseSlug = title.replace(" ", "-").toLowerCase();
 		currentArticle.get().setSlug(lowercaseSlug);
 		//here not updating word count assuming title update will not cause huge diff in human reading time
-		return articleRepository.save(currentArticle.get ()); //spring JPA CrudRepository inbuilt method
+		return articleRepository.save(currentArticle.get ());
 	}
 
-	public String deleteArticle(String slug_id) {
-		if(slug_id.equals(articleRepository.isIdExist(slug_id))) {
-			articleRepository.deleteBySlug_Id(slug_id);
+	public long deleteArticle(long slug_id) {
+		if(articleRepository.existsById(slug_id)) {
+			articleRepository.deleteById(slug_id);
 		}else {
-			slug_id = "Slug ID DOES NOT EXISTS!";
+			return 0L;
 		}
 		return slug_id;
 	}

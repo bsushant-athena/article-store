@@ -2,14 +2,14 @@ package com.article.entity;
 
 public class ArticleReadTime {
 
-    private String articleId;
+    private long articleId;
     private TimetoRead timetoRead;
 
-    public String getArticleId() {
+    public long getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(String articleId) {
+    public void setArticleId(long articleId) {
         this.articleId = articleId;
     }
 

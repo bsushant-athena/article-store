@@ -15,9 +15,9 @@ public class ArticleReadTimeService {
     @Value ("${reading.speed.of.avg.human}")
     private int avgHumanReadingSpeedPerMinute;
 
-    public ArticleReadTime getTimetoRead( String slug_id) {
+    public ArticleReadTime getTimetoRead( long slug_id) {
 
-        Optional<Article> currentArticle = articleRepository.getBySlug_Id(slug_id);
+        Optional<Article> currentArticle = articleRepository.findById(slug_id);
 
         if(!currentArticle.isPresent ()) {
             return null;

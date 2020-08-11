@@ -7,7 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @JsonPropertyOrder({
-    "slug_id",
+    "id",
     "slug",
     "title",
     "description",
@@ -25,11 +25,8 @@ public class Article implements java.io.Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonIgnore
-	private Long id;
-
 	@JsonProperty(value="id")
-	private String slug_id;
+	private Long id;
 
     private String slug;
 
@@ -47,12 +44,12 @@ public class Article implements java.io.Serializable {
 
 
 
-	public String getSlug_id ( ) {
-		return slug_id;
+	public Long getSlug_id ( ) {
+		return id;
 	}
 
-	public void setSlug_id ( String slug_id ) {
-		this.slug_id = slug_id;
+	public void setSlug_id ( Long id ) {
+		this.id = id;
 	}
 
 	public String getSlug ( ) {
