@@ -43,8 +43,8 @@ public class ArticleController {
 
 	@DeleteMapping(value="/{slug_id}")
 	public String deleteBySlugId(@PathVariable long slug_id) {
-		articleService.deleteArticle(slug_id);
-		return "Deleted article with id "+slug_id;
+		long deletedSlugId = articleService.deleteArticle(slug_id);
+		return deletedSlugId == 0L ? "No valid slugId found!" : "Deleted article with id "+slug_id;
 	}
 
 	@GetMapping(value = "/readtime/{slug_id}")
