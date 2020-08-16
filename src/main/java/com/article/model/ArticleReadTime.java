@@ -1,4 +1,4 @@
-package com.article.entity;
+package com.article.model;
 
 public class ArticleReadTime {
 

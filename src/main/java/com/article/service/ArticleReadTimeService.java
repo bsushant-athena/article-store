@@ -1,11 +1,11 @@
 package com.article.service;
 
 import com.article.entity.*;
+import com.article.model.*;
+import com.article.repository.*;
 import java.util.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
-import com.article.repository.ArticleRepository;
-import com.article.entity.ArticleReadTime;
 @Service
 public class ArticleReadTimeService {
 
@@ -42,10 +42,10 @@ public class ArticleReadTimeService {
         }
 
 
-        com.article.entity.ArticleReadTime articleReadTime = new com.article.entity.ArticleReadTime ();
+        ArticleReadTime articleReadTime = new ArticleReadTime ();
         articleReadTime.setArticleId ( slug_id );
 
-        com.article.entity.TimetoRead timetoRead = new com.article.entity.TimetoRead ();
+        TimetoRead timetoRead = new TimetoRead ();
         timetoRead.setMins( minutes );
         timetoRead.setSeconds ( seconds );
 

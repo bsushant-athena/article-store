@@ -48,10 +48,10 @@ public class ArticleController {
 	}
 
 	@GetMapping(value = "/readtime/{slug_id}")
-	public ResponseEntity <ArticleReadTime> getTimetoRead( @PathVariable("slug_id") long slug_id) {
-		ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead(slug_id);
+	public ResponseEntity < com.article.model.ArticleReadTime > getTimetoRead( @PathVariable("slug_id") long slug_id) {
+		com.article.model.ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead(slug_id);
 		return articleReadTime != null ?
-				new ResponseEntity <ArticleReadTime> (articleReadTime, HttpStatus.OK) :
+				new ResponseEntity < com.article.model.ArticleReadTime > (articleReadTime, HttpStatus.OK) :
 				new ResponseEntity <> ( HttpStatus.NOT_FOUND);
 	}
 }
