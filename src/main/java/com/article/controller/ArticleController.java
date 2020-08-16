@@ -26,10 +26,16 @@ public class ArticleController {
 	}
 	
 	@PatchMapping("/{slug_id}")
-	public ResponseEntity <Article> updateArticle(@RequestParam(value ="title" , required = true) String title,
+	public ResponseEntity <Article> updateArticleTitle(@RequestParam(value ="title" , required = true) String title,
 												  @PathVariable("slug_id") long slug_id) throws ArticleException {
-	 	Article newArticle = articleService.updateArticleTitle(title, slug_id);
-	 	return new ResponseEntity <Article> (newArticle, HttpStatus.OK);
+	 	Article updatedArticle = articleService.updateArticleTitle(title, slug_id);
+	 	return new ResponseEntity <Article> (updatedArticle, HttpStatus.OK);
+	}
+
+	@PutMapping("/{slug_id}")
+	public ResponseEntity <Article> updateArticle(@RequestBody Article article , @PathVariable("slug_id") long slug_id) throws ArticleException {
+		Article updatedArticle = articleService.updateArticle(slug_id);
+		return new ResponseEntity <Article> (updatedArticle, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{slug_id}")

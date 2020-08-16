@@ -8,6 +8,7 @@ import java.util.*;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
+import org.springframework.cache.annotation.Cacheable;
 
 @Service
 public class ArticleService {
@@ -49,6 +50,7 @@ public class ArticleService {
 		return articleRepository.save(updateArticle);
 	}
 
+	@Cacheable("article")
 	public Article getBySlug_Id(long slug_id) {
 		Optional<Article> article = articleRepository.findById(slug_id);
 		return article.isPresent() ? article.get() : null;
@@ -80,5 +82,31 @@ public class ArticleService {
 		totalWordsCount  += Arrays.stream(description.split( " " )).count ();
 		totalWordsCount += Arrays.stream(body.split( " " )).count ();
 		return totalWordsCount;
+	}
+
+	public Article updateArticle ( long slug_id )throws ArticleException {
+		Optional<Article> currentArticle = articleRepository.findById(slug_id);
+		if(!currentArticle.isPresent ()) {
+			throw new ArticleException("No article found with id " + slug_id);
+		}
+		Optional<String> articleTitle = Optional.ofNullable(currentArticle.get().getTitle()).filter(s -> !s.isEmpty());
+		Optional<String> articleDesc = Optional.ofNullable(currentArticle.get().getDescription()).filter(s -> !s.isEmpty());
+		Optional<String> articleBody = Optional.ofNullable(currentArticle.get().getBody()).filter(s -> !s.isEmpty());
+		currentArticle.get ().setBody ( articleBody.get () );
+		currentArticle.get ().setDescription ( articleDesc.get () );
+		currentArticle.get ().setTitle ( articleTitle.get () );
+
+		String lowercaseSlug = articleTitle.get ().replace(" ", "-").toLowerCase();
+		currentArticle.get().setSlug(lowercaseSlug);
+
+		long wordcount = calculateTotalWordCount(articleTitle.get (),articleDesc.get (),articleBody.get ());
+		currentArticle.get ().setWordcount (wordcount);
+
+		//set article timestamp
+		ZonedDateTime zdtObj = ZonedDateTime.now();
+		zdtObj.format( java.time.format.DateTimeFormatter.ISO_INSTANT.withZone(ZoneId.systemDefault()) );
+		currentArticle.get ().setUpdatedAt(zdtObj);
+
+		return articleRepository.save(currentArticle.get ());
 	}
 }
