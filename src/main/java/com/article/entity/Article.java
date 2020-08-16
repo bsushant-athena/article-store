@@ -107,4 +107,5 @@ public class Article implements java.io.Serializable {
 	public void setWordcount ( Long wordcount ) {
 		this.wordcount = wordcount;
 	}
+
 }

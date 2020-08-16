@@ -15,7 +15,7 @@ public class ArticleReadTimeServiceTest {
     @org.junit.jupiter.api.Test
     public void shouldReturnNullTimetoReadObject(){
         when(articleRepository.findById ( 1L )).thenReturn( java.util.Optional.empty ());
-        com.article.entity.ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead ( 1 );
+        com.article.model.ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead ( 1 );
         assertNull(articleReadTime);
     }
 
@@ -28,7 +28,7 @@ public class ArticleReadTimeServiceTest {
         article.setDescription ( "bye" );
         article.setTitle ( "ok" );
         when(articleRepository.findById ( 1L )).thenReturn( java.util.Optional.of ( article ));
-        com.article.entity.ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead ( 1 );
+        com.article.model.ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead ( 1 );
         assertEquals ( articleReadTime.getArticleId (),1L );
         assertEquals ( articleReadTime.getTimetoRead ().getMins (),1L );
         assertEquals ( articleReadTime.getTimetoRead ().getSeconds (),0 );
@@ -43,7 +43,7 @@ public class ArticleReadTimeServiceTest {
         article.setDescription ( "bye" );
         article.setTitle ( "ok" );
         when(articleRepository.findById ( 1L )).thenReturn( java.util.Optional.of ( article ));
-        com.article.entity.ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead ( 1 );
+        com.article.model.ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead ( 1 );
         assertEquals ( articleReadTime.getArticleId (),1L );
         assertEquals ( articleReadTime.getTimetoRead ().getMins (),0 );
         assertEquals ( articleReadTime.getTimetoRead ().getSeconds (),50L );
@@ -58,7 +58,7 @@ public class ArticleReadTimeServiceTest {
         article.setDescription ( "bye" );
         article.setTitle ( "ok" );
         when(articleRepository.findById ( 1L )).thenReturn( java.util.Optional.of ( article ));
-        com.article.entity.ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead ( 1 );
+        com.article.model.ArticleReadTime articleReadTime = articleReadTimeService.getTimetoRead ( 1 );
         assertEquals ( articleReadTime.getArticleId (),1L );
         assertEquals ( articleReadTime.getTimetoRead ().getMins (),2L );
         assertEquals ( articleReadTime.getTimetoRead ().getSeconds (),1L );

@@ -34,7 +34,7 @@ public class ArticleController {
 
 	@PutMapping("/{slug_id}")
 	public ResponseEntity <Article> updateArticle(@RequestBody Article article , @PathVariable("slug_id") long slug_id) throws ArticleException {
-		Article updatedArticle = articleService.updateArticle(slug_id);
+		Article updatedArticle = articleService.updateArticle(article,slug_id);
 		return new ResponseEntity <Article> (updatedArticle, HttpStatus.OK);
 	}
 	

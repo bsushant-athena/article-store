@@ -18,7 +18,7 @@ public class ArticleService {
 
 	private static final Logger logger = LoggerFactory.getLogger( com.article.controller.ArticleController.class);
 
-	public com.article.entity.Article createArticle( Article article) throws ArticleException {
+	public Article createArticle( Article article) throws ArticleException {
 
 		//condition mandatory article details
 		Optional<String> articleTitle = Optional.ofNullable(article.getTitle()).filter(s -> !s.isEmpty());
@@ -84,29 +84,29 @@ public class ArticleService {
 		return totalWordsCount;
 	}
 
-	public Article updateArticle ( long slug_id )throws ArticleException {
+	public Article updateArticle ( Article updatedArticle, long slug_id )throws ArticleException {
 		Optional<Article> currentArticle = articleRepository.findById(slug_id);
 		if(!currentArticle.isPresent ()) {
 			throw new ArticleException("No article found with id " + slug_id);
 		}
-		Optional<String> articleTitle = Optional.ofNullable(currentArticle.get().getTitle()).filter(s -> !s.isEmpty());
-		Optional<String> articleDesc = Optional.ofNullable(currentArticle.get().getDescription()).filter(s -> !s.isEmpty());
-		Optional<String> articleBody = Optional.ofNullable(currentArticle.get().getBody()).filter(s -> !s.isEmpty());
-		currentArticle.get ().setBody ( articleBody.get () );
-		currentArticle.get ().setDescription ( articleDesc.get () );
-		currentArticle.get ().setTitle ( articleTitle.get () );
+		Optional<String> articleTitle = Optional.ofNullable(updatedArticle.getTitle()).filter(s -> !s.isEmpty());
+		Optional<String> articleDesc = Optional.ofNullable(updatedArticle.getDescription()).filter(s -> !s.isEmpty());
+		Optional<String> articleBody = Optional.ofNullable(updatedArticle.getBody()).filter(s -> !s.isEmpty());
+		updatedArticle.setBody ( articleBody.get () );
+		updatedArticle.setDescription ( articleDesc.get () );
+		updatedArticle.setTitle ( articleTitle.get () );
 
 		String lowercaseSlug = articleTitle.get ().replace(" ", "-").toLowerCase();
-		currentArticle.get().setSlug(lowercaseSlug);
+		updatedArticle.setSlug(lowercaseSlug);
 
 		long wordcount = calculateTotalWordCount(articleTitle.get (),articleDesc.get (),articleBody.get ());
-		currentArticle.get ().setWordcount (wordcount);
+		updatedArticle.setWordcount (wordcount);
 
 		//set article timestamp
 		ZonedDateTime zdtObj = ZonedDateTime.now();
 		zdtObj.format( java.time.format.DateTimeFormatter.ISO_INSTANT.withZone(ZoneId.systemDefault()) );
-		currentArticle.get ().setUpdatedAt(zdtObj);
+		updatedArticle.setUpdatedAt(zdtObj);
 
-		return articleRepository.save(currentArticle.get ());
+		return articleRepository.save(updatedArticle);
 	}
 }

@@ -39,6 +39,23 @@ public class ArticleServiceTest {
     }
 
     @org.junit.Test
+    public void shouldReturnValidUpdatedArticleObject() throws Exception{
+        com.article.entity.Article article = new com.article.entity.Article ();
+        article.setBody ( "hello" );
+        article.setSlug_id ( 1L );
+        article.setDescription ( "bye bye" );
+        article.setTitle ( "ok" );
+
+        when(articleRepository.findById ( 1L )).thenReturn( java.util.Optional.of ( article ));
+        com.article.entity.Article articleNew = articleService.updateArticle ( article,1L );
+
+        assertEquals ( (long)articleNew.getSlug_id (),1L );
+        assertEquals ( articleNew.getDescription (),"bye bye");
+        assertEquals ( articleNew.getTitle (),"ok");
+        assertEquals ( articleNew.getSlug (),"hello");
+    }
+
+    @org.junit.Test
     public void shouldReturnZeroSlugIdForNonExistingArticle(){
         when(articleRepository.existsById ( 1L )).thenReturn( false);
         long deletedSlugId = articleService.deleteArticle ( 1 );

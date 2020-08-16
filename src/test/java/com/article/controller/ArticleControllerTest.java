@@ -1,5 +1,9 @@
 package com.article.controller;
 
+import com.article.entity.*;
+import com.article.exception.*;
+import com.article.model.*;
+import com.article.service.*;
 import org.junit.jupiter.api.extension.*;
 import org.mockito.*;
 import org.mockito.junit.jupiter.*;
@@ -14,32 +18,52 @@ public class ArticleControllerTest {
     ArticleController articleController;
 
     @Mock
-    com.article.service.ArticleService articleService;
+    ArticleService articleService;
 
     @org.mockito.Mock
-    com.article.service.ArticleReadTimeService articleReadTimeService;
+    ArticleReadTimeService articleReadTimeService;
 
     @org.junit.jupiter.api.Test
-    public void testCreateArticle() throws com.article.exception.ArticleException {
-        com.article.entity.Article article = new com.article.entity.Article ();
+    public void testCreateArticle() throws ArticleException {
+        Article article = new Article ();
         article.setBody ( "hello" );
         article.setDescription ( "bye" );
         article.setTitle ( "ok cool" );
         when(articleService.createArticle ( article ))
                 .thenReturn ( article ) ;
-        org.springframework.http.ResponseEntity < com.article.entity.Article > createdArticleResponse = articleController.createArticle (article);
+        org.springframework.http.ResponseEntity < Article > createdArticleResponse = articleController.createArticle (article);
         assertEquals ( createdArticleResponse.getStatusCode (), org.springframework.http.HttpStatus.CREATED );
     }
 
     @org.junit.jupiter.api.Test
-    public void testUpdateArticle() throws com.article.exception.ArticleException {
-        String title = "new tile";
+    public void testUpdateArticleTitle() throws com.article.exception.ArticleException {
+        String title = "new title";
         long slug_id = 2L;
         com.article.entity.Article returnedArticle = new com.article.entity.Article ();
         returnedArticle.setSlug ( "new-title" );
         when(articleService.updateArticleTitle ( title , slug_id))
                 .thenReturn ( returnedArticle ) ;
-        org.springframework.http.ResponseEntity < com.article.entity.Article > updatedArticleResponse = articleController.updateArticle (title,slug_id);
+        org.springframework.http.ResponseEntity < com.article.entity.Article > updatedArticleResponse = articleController.updateArticleTitle (title,slug_id);
+        assertEquals ( updatedArticleResponse.getStatusCode (), org.springframework.http.HttpStatus.OK );
+        assertEquals ( updatedArticleResponse.getBody ().getSlug (), "new-title" );
+    }
+
+    @org.junit.jupiter.api.Test
+    public void testUpdateArticle() throws com.article.exception.ArticleException {
+        long slug_id = 2L;
+        Article updatedArticle = new Article ();
+        updatedArticle.setSlug ( "new-title" );
+
+        Article returnedArticle = new Article ();
+        returnedArticle.setTitle ( "new title" );
+        returnedArticle.setBody ( "body" );
+        returnedArticle.setDescription ( "desc" );
+        returnedArticle.setSlug ( "new-title" );
+        returnedArticle.setWordcount ( 4L );
+
+        when(articleService.updateArticle (updatedArticle,slug_id))
+                .thenReturn ( returnedArticle );
+        org.springframework.http.ResponseEntity < Article > updatedArticleResponse = articleController.updateArticle (updatedArticle,slug_id);
         assertEquals ( updatedArticleResponse.getStatusCode (), org.springframework.http.HttpStatus.OK );
         assertEquals ( updatedArticleResponse.getBody ().getSlug (), "new-title" );
     }
@@ -94,7 +118,7 @@ public class ArticleControllerTest {
         long slug_id = 2L;
         when(articleReadTimeService.getTimetoRead (slug_id))
                 .thenReturn ( null ) ;
-        org.springframework.http.ResponseEntity < com.article.entity.ArticleReadTime > getArticleReadTimeResponse = articleController.getTimetoRead (slug_id);
+        org.springframework.http.ResponseEntity < ArticleReadTime > getArticleReadTimeResponse = articleController.getTimetoRead (slug_id);
         assertEquals ( getArticleReadTimeResponse.getStatusCode (), org.springframework.http.HttpStatus.NOT_FOUND );
         assertNull ( getArticleReadTimeResponse.getBody () );
     }
@@ -102,14 +126,14 @@ public class ArticleControllerTest {
     @org.junit.jupiter.api.Test
     public void testGetTimetoReadNotNullCase() {
         long slug_id = 2L;
-        com.article.entity.ArticleReadTime articleReadTime = new com.article.entity.ArticleReadTime ();
-        com.article.entity.TimetoRead timetoRead = new com.article.entity.TimetoRead ();
+        ArticleReadTime articleReadTime = new ArticleReadTime ();
+        TimetoRead timetoRead = new TimetoRead ();
         timetoRead.setMins ( 1 );
         articleReadTime.setTimetoRead ( timetoRead );
         articleReadTime.setArticleId ( slug_id );
         when(articleReadTimeService.getTimetoRead (slug_id))
                 .thenReturn ( articleReadTime ) ;
-        org.springframework.http.ResponseEntity < com.article.entity.ArticleReadTime > getArticleReadTimeResponse = articleController.getTimetoRead (slug_id);
+        org.springframework.http.ResponseEntity < ArticleReadTime > getArticleReadTimeResponse = articleController.getTimetoRead (slug_id);
         assertEquals ( getArticleReadTimeResponse.getStatusCode (), org.springframework.http.HttpStatus.OK );
         assertNotNull ( getArticleReadTimeResponse.getBody () );
     }
