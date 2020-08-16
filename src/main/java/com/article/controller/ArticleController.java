@@ -38,6 +38,14 @@ public class ArticleController {
 		return new ResponseEntity <Article> (updatedArticle, HttpStatus.OK);
 	}
 	
+	@GetMapping("/")
+	@ResponseBody
+	public ResponseEntity < java.util.List<Article>> getArticles(){
+		java.util.List < com.article.entity.Article> articleList= articleService.getAllArticles();
+		return articleList.isEmpty () ? new ResponseEntity < java.util.List < com.article.entity.Article> >(articleList, HttpStatus.NO_CONTENT)
+				: new ResponseEntity < java.util.List < com.article.entity.Article> >(articleList,HttpStatus.OK);
+	}
+
 	@GetMapping("/{slug_id}")
 	@ResponseBody
 	public ResponseEntity <Article> getBySlugId( @PathVariable long slug_id){

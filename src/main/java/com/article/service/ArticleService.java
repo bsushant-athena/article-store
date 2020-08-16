@@ -25,9 +25,9 @@ public class ArticleService {
 		Optional<String> articleDesc = Optional.ofNullable(article.getDescription()).filter(s -> !s.isEmpty());
 		Optional<String> articleBody = Optional.ofNullable(article.getBody()).filter(s -> !s.isEmpty());
 
-		if(!articleTitle.isPresent () || !articleDesc.isPresent () || !articleBody.isPresent ()){
-			throw new com.article.exception.ArticleException ( "Please provide all mandatory fields for creating an article!" );
-		}
+//		if(!articleTitle.isPresent () || !articleDesc.isPresent () || !articleBody.isPresent ()){
+//			throw new com.article.exception.ArticleException ( "Please provide all mandatory fields for creating an article!" );
+//		}
 
 		Article updateArticle = new Article();
 		updateArticle.setTitle(articleTitle.get ());
@@ -54,6 +54,14 @@ public class ArticleService {
 	public Article getBySlug_Id(long slug_id) {
 		Optional<Article> article = articleRepository.findById(slug_id);
 		return article.isPresent() ? article.get() : null;
+	}
+
+	@Cacheable("article")
+	public List<Article> getAllArticles() {
+		Iterable<Article> article = articleRepository.findAll();
+		List<Article> articleList = new ArrayList<>();
+		article.forEach ( articleList::add );
+		return articleList;
 	}
 	
 	public Article updateArticleTitle(String title, long slug_id) throws ArticleException {
@@ -89,12 +97,14 @@ public class ArticleService {
 		if(!currentArticle.isPresent ()) {
 			throw new ArticleException("No article found with id " + slug_id);
 		}
+
 		Optional<String> articleTitle = Optional.ofNullable(updatedArticle.getTitle()).filter(s -> !s.isEmpty());
 		Optional<String> articleDesc = Optional.ofNullable(updatedArticle.getDescription()).filter(s -> !s.isEmpty());
 		Optional<String> articleBody = Optional.ofNullable(updatedArticle.getBody()).filter(s -> !s.isEmpty());
 		updatedArticle.setBody ( articleBody.get () );
 		updatedArticle.setDescription ( articleDesc.get () );
 		updatedArticle.setTitle ( articleTitle.get () );
+		updatedArticle.setSlug_id ( slug_id );
 
 		String lowercaseSlug = articleTitle.get ().replace(" ", "-").toLowerCase();
 		updatedArticle.setSlug(lowercaseSlug);

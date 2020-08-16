@@ -30,10 +30,13 @@ public class Article implements java.io.Serializable {
 
     private String slug;
 
+    //@lombok.NonNull
     private String title;
 
+	//@lombok.NonNull
     private String description;
 
+	//@lombok.NonNull
     private String body;
 
     private ZonedDateTime createdAt;
@@ -41,7 +44,6 @@ public class Article implements java.io.Serializable {
     private ZonedDateTime updatedAt;
 
 	private Long wordcount;
-
 
 
 	public Long getSlug_id ( ) {
